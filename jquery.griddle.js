@@ -3,6 +3,8 @@
  *
  * Licensed under the MIT license.
  * Copyright 2013 James Musgrave / YES
+ 
+ * https://github.com/yesstudio/griddle.js
  * http://www.yesstudio.co.uk
  */
 
