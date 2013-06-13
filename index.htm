@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+		<style>
+			body{
+				margin:50px;
+			}
+			.item{
+				opacity:0;
+				-webkit-transition: opacity 1s ease-out;
+		 		 -moz-transition: opacity 1s ease-out;
+		 		 transition: opacity 1s ease-out;
+			}
+			#more{
+				display:none;
+			}
+			.wrap:after {
+				content: ".";
+				display: block;
+				clear: both;
+				visibility: hidden;
+				line-height: 0;
+				height: 0;
+			}
+		</style>
+</head>
+<body>
+
+<h2>Predefined Groups</h2>
+<div id="setpattern">
+	<div class="wrap">
+		<div class="item">
+			<img src="/examples/images/portrait.png" />
+		</div>
+		<div class="item">
+			<img src="/examples/images/landscape.png" />
+		</div>
+		<div class="item">
+			<img src="/examples/images/widescreen.png" />
+		</div>
+	</div>
+	<div class="wrap">
+		<div class="item">
+			<img src="/examples/images/widescreen.png" />
+		</div>
+		<div class="item">
+			<img src="/examples/images/square.png" />
+		</div>
+	</div>
+	<div class="wrap">	
+		<div class="item">
+			<img src="/examples/images/square.png" />
+		</div>
+		<div class="item">
+			<img src="/examples/images/portrait.png" />
+		</div>
+		<div class="item">
+			<img src="/examples/images/landscape.png" />
+		</div>
+	</div>
+</div>
+
+
+<h2>Only Show Full Rows</h2>
+<div id="fullrows" class="wrap">
+	<div class="item">
+		<img src="/examples/images/square.png" />
+	</div>
+	<div class="item">
+		<img src="/examples/images/portrait.png" />
+	</div>
+	<div class="item">
+		<img src="/examples/images/landscape.png" />
+	</div>
+	<div class="item">
+		<img src="/examples/images/widescreen.png" />
+	</div>
+	<div class="item">
+		<img src="/examples/images/square.png" />
+	</div>
+	<div class="item">
+		<img src="/examples/images/portrait.png" />
+	</div>
+	<div class="item">
+		<img src="/examples/images/landscape.png" />
+	</div>
+	<div class="item">
+		<img src="/examples/images/widescreen.png" />
+	</div>
+</div>
+
+
+<div id="more">
+	<div class="item">
+		<img src="/examples/images/square.png" />
+	</div>
+	<div class="item">
+		<img src="/examples/images/portrait.png" />
+	</div>
+	<div class="item">
+		<img src="/examples/images/landscape.png" />
+	</div>
+	<div class="item">
+		<img src="/examples/images/widescreen.png" />
+	</div>
+</div>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script> 
+<script src="jquery.griddle.js"></script> 
+
+<script>
+
+$(function(){
+	$('.wrap').click(function(){
+		var source =  $('#more');
+		var random = Math.round(Math.random()*4);
+		var more = $(source).children('.item:eq('+random+')').clone().wrap('<div>').parent().html();
+		$(this).append(more);
+		// $(this).griddle('option',{parentWidth: 500});
+		$(this).griddle('layout');
+	});
+	$('#setpattern .wrap').imagesLoaded(function(){
+		$(this).griddle({
+			parentWidth: 900,
+			end: function(elm){
+				elm.children().css({opacity:1});				
+			}
+		});
+	});
+	$('#fullrows').imagesLoaded(function(){
+		$(this).griddle({
+			maxRatio : 2.6,
+			maxHeight : 400,
+			end: function(elm){
+				// $("html, body").scrollTop($(document).height());
+				var lastRow = elm.children().last().attr('data-row');
+				elm.children('[data-row!="'+lastRow+'"]').show().css({opacity:1});
+				elm.children('[data-row="'+lastRow+'"]').css({display:'none'});
+				
+			}
+		});
+	});
+});
+
+</script>
+
+</body>
+</html>
