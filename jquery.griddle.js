@@ -32,7 +32,8 @@
 			'width': '100%',
 			'height': '100%'
 		}, // Img CSS after before function but before layout
-		cssEnd: false // Img CSS after everything
+		cssEnd: false, // Img CSS after everything
+		exposeScaling: false // Expose scaling in dom 
 	};
 
 	$.griddle.prototype = {
@@ -156,11 +157,14 @@
 			for (var i = 0, len = this.$items.length; i < len; i++) {
 
 				var elm = $(this.$items[i]);
-
-				var width = elm.attr('data-width');
-				var height = elm.attr('data-height');
-				var ratio = width / height;
-
+				var width,height = null;
+				var ratio = elm.attr('data-ratio');
+				if (ratio === undefined) {
+					width = elm.attr('data-width');
+					height = elm.attr('data-height');
+					ratio = width / height;
+				}
+				ratio = parseFloat(ratio);
 				this.widths[this.widths.length] = width;
 				this.heights[this.heights.length] = height;
 				this.ratios[this.ratios.length] = ratio;
@@ -194,25 +198,31 @@
 			var runningWidth = 0;
 			for (var i = 0, len = this.$items.length; i < len; i++) {
 				var fraction = this.ratios[i] / this.map[i];
-				var width = Math.floor(fraction * this.parentWidth);
-				var height = Math.floor(this.parentWidth / this.map[i]);
+				var width = Math.round(fraction * this.parentWidth);
+				var height = Math.round(this.parentWidth / this.map[i]);
 				if (height > this.options.maxHeight) {
 					height = this.options.maxHeight;
 					width = height * this.ratios[i];
 				}
 				if (this.breaks[i] !== this.breaks[i + 1]) {
 					var posWidth = this.parentWidth - runningWidth;
-					if (posWidth - width < 5) {
+					if (posWidth - width < 5 || width > posWidth) {
 						width = posWidth;
 					}
 					runningWidth = 0;
 				} else {
 					runningWidth = runningWidth + width;
 				}
+
 				$(this.$items[i]).css({
 					'width': width,
 					'height': height
 				}).attr('data-row', this.breaks[i]);
+
+				if (this.options.exposeScaling) {
+					var scale = Math.round((width / this.widths[i]) * 100) / 100;
+					$(this.$items[i]).attr('data-scale', scale);
+				}
 			}
 		},
 		_cancel: function() {
