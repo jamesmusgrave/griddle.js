@@ -25,7 +25,7 @@
 		maxHeight: 9999, // Max Height of items
 		parentWidth: false, // Force setting of the containers width defaults to auto
 		minParentWidth: 700, // If less than this amount the whole layout cancels
-		maxRatio: 99, // Max ratio of the total row, fiddle for best effect
+		maxRatio: 10, // Max ratio of the total row, fiddle for best effect
 		before: false, // Function to call before layout
 		end: false, // Function to call after layout
 		cssBefore: {
@@ -33,7 +33,8 @@
 			'height': '100%'
 		}, // Img CSS after before function but before layout
 		cssEnd: false, // Img CSS after everything
-		exposeScaling: false // Expose scaling in dom 
+		exposeScaling: false, // Expose scaling in dom
+		gutter: 0
 	};
 
 	$.griddle.prototype = {
@@ -154,6 +155,11 @@
 			this.widths = [];
 			this.heights = [];
 			this.breaks = [];
+
+			this.rows = [];
+
+			var row = [];
+
 			for (var i = 0, len = this.$items.length; i < len; i++) {
 
 				var elm = $(this.$items[i]);
@@ -187,6 +193,73 @@
 
 			}
 
+
+			////////////////////////////
+			var rowRatio = 0;
+			var rowCount = 0;
+			this.rowRatios = [];
+
+			
+
+			for (var i = 0, len = this.$items.length; i < len; i++) {
+
+				var $this = $(this.$items[i]);
+
+			  	var ratio = $this.attr('data-ratio');
+
+			  	if (ratio === undefined) {
+					width = $this.attr('data-width');
+					height = $this.attr('data-height');
+					ratio = width / height;
+					$this.attr('data-ratio',ratio);
+					
+				}
+
+				ratio = parseFloat(ratio);
+				// ratio = Math.floor(ratio * 100)/100;
+				rowRatio = rowRatio + ratio;
+
+				$this.attr('data-first',false).attr('data-last',false);
+
+				if (
+						// this.parentWidth / rowRatio < this.options.minHeight ||
+						// (
+							rowRatio > this.options.maxRatio 
+							// && this.parentWidth / rowRatio < this.options.maxHeight
+						// )
+					)
+				{
+					
+
+					$(this.$items[i-1]).attr('data-pos','last').attr('data-last',true);
+					$this.attr('data-pos','first').attr('data-first',true);
+
+					// $(this.$items[i-1]).addClass('griddle-last');
+					// $this.addClass('griddle-first');
+
+					this.rows.push(row);
+					row = [];
+					rowRatio = ratio;
+					rowCount++;
+					
+				} 
+				this.rowRatios[rowCount] = rowRatio;
+				$this.attr('data-row',rowCount);
+				row.push($this);
+			};
+
+			this.rows.push(row);
+
+			$(this.$items[0]).attr('data-pos','first').attr('data-first',true);
+			$(this.$items[this.$items.length-1]).attr('data-pos','last').attr('data-last',true);
+
+			console.log('rowRatios',this.rowRatios);
+			////////////////////////////
+
+
+			console.log('rows',this.rows);
+
+
 			for (var p = 0; p < rows.length; p++) {
 				for (var o = 0; o < rows[p].length; o++) {
 					this.map[this.map.length] = rows[p][rows[p].length - 1];
@@ -195,35 +268,99 @@
 			}
 		},
 		_makeLayout: function() {
-			var runningWidth = 0;
-			for (var i = 0, len = this.$items.length; i < len; i++) {
-				var fraction = this.ratios[i] / this.map[i];
-				var width = Math.round(fraction * this.parentWidth);
-				var height = Math.round(this.parentWidth / this.map[i]);
-				if (height > this.options.maxHeight) {
-					height = this.options.maxHeight;
-					width = height * this.ratios[i];
-				}
-				if (this.breaks[i] !== this.breaks[i + 1]) {
-					var posWidth = this.parentWidth - runningWidth;
-					if (posWidth - width < 5 || width > posWidth) {
-						width = posWidth;
+
+
+
+
+			// var runningWidth = 0;
+			// for (var i = 0, len = this.$items.length; i < len; i++) {
+			// 	var fraction = this.ratios[i] / this.map[i];
+			// 	var width = Math.round(fraction * this.parentWidth);
+			// 	var height = Math.round(this.parentWidth / this.map[i]);
+			// 	if (height > this.options.maxHeight) {
+			// 		height = this.options.maxHeight;
+			// 		width = height * this.ratios[i];
+			// 	}
+			// 	if (this.breaks[i] !== this.breaks[i + 1]) {
+			// 		var posWidth = this.parentWidth - runningWidth;
+			// 		if (posWidth - width < 5 || width > posWidth) {
+			// 			width = posWidth;
+			// 		}
+			// 		runningWidth = 0;
+			// 	} else {
+			// 		runningWidth = runningWidth + width;
+			// 	}
+
+			// 	$(this.$items[i]).css({
+			// 		'width': width,
+			// 		'height': height
+			// 	}).attr('data-row', this.breaks[i]);
+
+			// 	if (this.options.exposeScaling) {
+			// 		var scale = Math.round((width / this.widths[i]) * 100) / 100;
+			// 		$(this.$items[i]).attr('data-scale', scale);
+			// 	}
+			// }
+
+
+			for (var i = 0, il = this.rows.length; i < il; i++) {
+
+				var rowLength = this.rows[i].length;
+
+				var rowWidth = this.parentWidth - (parseInt(this.options.gutter) * rowLength - 1);
+
+				for (var o = 0; o < rowLength; o++) {
+
+					var $this = this.rows[i][o];
+
+					var ratio = parseFloat($this.attr('data-ratio'));
+					var rowCount = parseInt($this.attr('data-row'));
+					
+					var rowRatio = this.rowRatios[rowCount];
+
+					var fraction = ratio/rowRatio;
+
+					console.log('fraction', ratio, rowRatio, fraction);
+					// if(isFinite(fraction)){
+					// 	fraction = 1;
+					// }
+
+					var width = Math.floor(rowWidth * fraction);
+
+					var height = Math.floor(rowWidth / rowRatio);
+					// var height = width / ratio;
+
+					// if(height > this.options.maxHeight){
+					// 	height = this.options.maxHeight;
+					// 	width = height / ratio;
+					// 	console.log('too high');
+					// }
+					if($this.attr('data-pos') === 'last'){
+						console.log('----');
 					}
-					runningWidth = 0;
-				} else {
-					runningWidth = runningWidth + width;
+					var gutter = ($this.attr('data-pos') !== 'last') ? this.options.gutter : 0;
+					$this.css({
+						// 'border': '1px solid #fcc',
+						'width': width,
+						'height': height,
+						'margin-right': gutter,
+						'margin-bottom': this.options.gutter
+					});
+
+					// if (this.options.exposeScaling) {
+					// 	var origWidth = parseInt($this.attr('data-width'));
+					// 	console.log('origWidth', width, origWidth);
+					// 	var scale = Math.round((width / origWidth) * 100) / 100;
+					// 	$this.attr('data-scale', scale);
+					// }
+
+					// console.log('tile',$this,fraction,width, height, ratio,rowCount,rowRatio);
+
 				}
 
-				$(this.$items[i]).css({
-					'width': width,
-					'height': height
-				}).attr('data-row', this.breaks[i]);
-
-				if (this.options.exposeScaling) {
-					var scale = Math.round((width / this.widths[i]) * 100) / 100;
-					$(this.$items[i]).attr('data-scale', scale);
-				}
 			}
+
+
 		},
 		_cancel: function() {
 			this.element.children()

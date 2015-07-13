@@ -32,8 +32,7 @@
 
 		#scalingtext .item {
 			float: left;
-			border-top: 1px solid #fff;
-			border-right: 1px solid #fff;
+			
 			padding: 10px;
 		}
 
@@ -42,10 +41,17 @@
 		}
 
 		.item {
-			border-top: 5px solid #fff;
-            border-right: 5px solid #fff;
-		}
+			/*border-top: 5px solid #fff;*/
+            border: 2px solid #fff;
 
+		}
+        .item[data-first='true']{
+            border-left: 5px solid #ff0;
+        }
+        .item[data-last='true']{
+            border-right: 5px solid #f00;
+        }
+       
 		.wrap:after {
 			content: ".";
 			display: block;
@@ -166,32 +172,32 @@
     <div id="setpattern">
         <div class="wrap">
             <div class="item">
-                <img src="/examples/images/portrait.png" />
+                <img src="examples/images/portrait.png" />
             </div>
             <div class="item">
-                <img src="/examples/images/landscape.png" />
+                <img src="examples/images/landscape.png" />
             </div>
             <div class="item">
-                <img src="/examples/images/widescreen.png" />
-            </div>
-        </div>
-        <div class="wrap">
-            <div class="item">
-                <img src="/examples/images/widescreen.png" />
-            </div>
-            <div class="item">
-                <img src="/examples/images/square.png" />
+                <img src="examples/images/widescreen.png" />
             </div>
         </div>
         <div class="wrap">
             <div class="item">
-                <img src="/examples/images/square.png" />
+                <img src="examples/images/widescreen.png" />
             </div>
             <div class="item">
-                <img src="/examples/images/portrait.png" />
+                <img src="examples/images/square.png" />
+            </div>
+        </div>
+        <div class="wrap">
+            <div class="item">
+                <img src="examples/images/square.png" />
             </div>
             <div class="item">
-                <img src="/examples/images/landscape.png" />
+                <img src="examples/images/portrait.png" />
+            </div>
+            <div class="item">
+                <img src="examples/images/landscape.png" />
             </div>
         </div>
     </div>
@@ -201,52 +207,52 @@
     </h2>
     <div id="fullrows" class="wrap">
         <div class="item">
-            <img src="/examples/images/square.png" />
+            <img src="examples/images/square.png" />
         </div>
         <div class="item">
-            <img src="/examples/images/portrait.png" />
+            <img src="examples/images/portrait.png" />
         </div>
         <div class="item">
-            <img src="/examples/images/landscape.png" />
+            <img src="examples/images/landscape.png" />
         </div>
         <div class="item">
-            <img src="/examples/images/widescreen.png" />
+            <img src="examples/images/widescreen.png" />
         </div>
         <div class="item">
-            <img src="/examples/images/square.png" />
+            <img src="examples/images/square.png" />
         </div>
         <div class="item">
-            <img src="/examples/images/portrait.png" />
+            <img src="examples/images/portrait.png" />
         </div>
         <div class="item">
-            <img src="/examples/images/landscape.png" />
+            <img src="examples/images/landscape.png" />
         </div>
         <div class="item">
-            <img src="/examples/images/widescreen.png" />
+            <img src="examples/images/widescreen.png" />
         </div>
     </div>
     <div id="more">
         <div class="item">
-            <img src="/examples/images/square.png" />
+            <img src="examples/images/square.png" />
         </div>
         <div class="item">
-            <img src="/examples/images/portrait.png" />
+            <img src="examples/images/portrait.png" />
         </div>
         <div class="item">
-            <img src="/examples/images/landscape.png" />
+            <img src="examples/images/landscape.png" />
         </div>
         <div class="item">
-            <img src="/examples/images/widescreen.png" />
+            <img src="examples/images/widescreen.png" />
         </div>
     </div>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
     <script src="jquery.griddle.js"></script>
     <script>
     $(function() {
 	    $('#scalingtext').griddle({
-	        maxRatio: 4.5,
+	        maxRatio: 10.5,
 	        exposeScaling: true,
-	        maxHeight: 200,
+	        maxHeight: 1200,
 	        end: function(elm) {
 	            elm.children().each(function() {
 	                var scale = parseFloat($(this).attr('data-scale')) * 95;
@@ -261,6 +267,7 @@
 	    });
 	    $('#setratios').griddle({
 	        maxRatio: 3.5,
+            gutter: 20,
 	        end: function(elm) {
 	            elm.children().css({
 	                opacity: 1
@@ -279,7 +286,7 @@
 	    });
 	    $('#fullrows').imagesLoaded(function() {
 	        $(this).griddle({
-	            maxRatio: 2.6,
+	            maxRatio: 3.6,
 	            maxHeight: 400,
 	            end: function(elm) {
 	                // $("html, body").scrollTop($(document).height());
