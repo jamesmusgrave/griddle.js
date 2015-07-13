@@ -1,11 +1,10 @@
 /*
- * jQuery griddle v1.0
+ * jQuery griddle v1.1
  *
  * Licensed under the MIT license.
- * Copyright 2013 James Musgrave / YES
+ * Copyright 2015 James Musgrave
  
- * https://github.com/yesstudio/griddle.js
- * http://www.yesstudio.co.uk
+ * https://github.com/jamesmusgrave/griddle.js
  */
 
 /*jshint browser: true, curly: true, eqeqeq: true, forin: false, immed: false, newcap: true, noempty: true, strict: true, undef: true */
@@ -22,7 +21,7 @@
 	$.griddle.defaults = {
 		isResizable: true, // Resize function that fires on smart resize
 		minHeight: 0, // Min height of items
-		maxHeight: 9999, // Max Height of items
+		maxHeight: 99999, // Max Height of items
 		parentWidth: false, // Force setting of the containers width defaults to auto
 		minParentWidth: 700, // If less than this amount the whole layout cancels
 		maxRatio: 10, // Max ratio of the total row, fiddle for best effect
@@ -34,7 +33,7 @@
 		}, // Img CSS after before function but before layout
 		cssEnd: false, // Img CSS after everything
 		exposeScaling: false, // Expose scaling in dom
-		gutter: 0
+		gutter: 0 // Set gutter
 	};
 
 	$.griddle.prototype = {
@@ -130,7 +129,6 @@
 				if (typeof(elm.attr('data-height') === 'undefined')) {
 					elm.attr('data-height', elm.outerHeight());
 				}
-
 			});
 
 			return this.$items;
@@ -145,217 +143,135 @@
 		},
 		_getRatios: function() {
 
-			var rowTicker = 0;
-			var ratioTicker = 0;
-			var rows = [
-				[]
-			];
-			this.map = [];
-			this.ratios = [];
-			this.widths = [];
-			this.heights = [];
-			this.breaks = [];
+			/* Calculate Rows */
 
 			this.rows = [];
-
 			var row = [];
-
-			for (var i = 0, len = this.$items.length; i < len; i++) {
-
-				var elm = $(this.$items[i]);
-				var width,height = null;
-				var ratio = elm.attr('data-ratio');
-				if (ratio === undefined) {
-					width = elm.attr('data-width');
-					height = elm.attr('data-height');
-					ratio = width / height;
-				}
-				ratio = parseFloat(ratio);
-				this.widths[this.widths.length] = width;
-				this.heights[this.heights.length] = height;
-				this.ratios[this.ratios.length] = ratio;
-
-				ratioTicker = ratioTicker + ratio;
-
-				rows[rowTicker][rows[rowTicker].length] = ratioTicker;
-
-				if (this.parentWidth / ratioTicker < this.options.minHeight) {
-					rowTicker++;
-					ratioTicker = 0;
-					rows[rowTicker] = [];
-				}
-
-				if (ratioTicker > this.options.maxRatio && this.parentWidth / ratioTicker < this.options.maxHeight) {
-					rowTicker++;
-					ratioTicker = 0;
-					rows[rowTicker] = [];
-				}
-
-			}
-
-
-			////////////////////////////
 			var rowRatio = 0;
 			var rowCount = 0;
 			this.rowRatios = [];
 
-			
+			this.itemsCount = this.$items.length;
 
-			for (var i = 0, len = this.$items.length; i < len; i++) {
+			/* Loop All Elements */
+			for (var i = 0; i < this.itemsCount; i++) {
 
 				var $this = $(this.$items[i]);
 
-			  	var ratio = $this.attr('data-ratio');
-
-			  	if (ratio === undefined) {
-					width = $this.attr('data-width');
-					height = $this.attr('data-height');
+				/* Use ratio set in markup if available */
+				var ratio = $this.attr('data-ratio');
+				if (ratio === undefined) {
+					var width = $this.attr('data-width');
+					var height = $this.attr('data-height');
 					ratio = width / height;
 					$this.attr('data-ratio',ratio);
-					
 				}
-
 				ratio = parseFloat(ratio);
-				// ratio = Math.floor(ratio * 100)/100;
+
+				/* Track the ratio of the row */
 				rowRatio = rowRatio + ratio;
 
+				/* Reset elements if they have moved */
 				$this.attr('data-first',false).attr('data-last',false);
 
+				/* Is this the first element? */
+				if(i === 0){
+					$this.attr('data-first',true);
+				}
+
+				/* Is this the last element? */
+				if(i === this.itemsCount - 1){
+					$this.attr('data-last',true);
+				}
+
+				/* Should we start a new row? */
 				if (
-						// this.parentWidth / rowRatio < this.options.minHeight ||
-						// (
+						this.parentWidth / rowRatio < this.options.minHeight ||
+						(
 							rowRatio > this.options.maxRatio 
-							// && this.parentWidth / rowRatio < this.options.maxHeight
-						// )
+							&& this.parentWidth / rowRatio < this.options.maxHeight
+						)
 					)
 				{
-					
+					/* If we are starting the row set the last element of the previous row */
+					$(this.$items[i-1]).attr('data-last',true);
 
-					$(this.$items[i-1]).attr('data-pos','last').attr('data-last',true);
-					$this.attr('data-pos','first').attr('data-first',true);
+					/* And the first item of our current row */
+					$this.attr('data-first',true);
 
-					// $(this.$items[i-1]).addClass('griddle-last');
-					// $this.addClass('griddle-first');
-
+					/* Finalise the row we just finished */
 					this.rows.push(row);
+
+					/* Start a new row and reset tracking varibles */
 					row = [];
 					rowRatio = ratio;
 					rowCount++;
 					
 				} 
+				/* Store row ratios for later */
 				this.rowRatios[rowCount] = rowRatio;
+
+				/* Track this items row */
 				$this.attr('data-row',rowCount);
+
+				/* Add this item to current row */
 				row.push($this);
 			};
 
+			/* Finalise last row */
 			this.rows.push(row);
 
-			$(this.$items[0]).attr('data-pos','first').attr('data-first',true);
-			$(this.$items[this.$items.length-1]).attr('data-pos','last').attr('data-last',true);
-
-			console.log('rowRatios',this.rowRatios);
-			////////////////////////////
-
-
-			console.log('rows',this.rows);
-
-
-			for (var p = 0; p < rows.length; p++) {
-				for (var o = 0; o < rows[p].length; o++) {
-					this.map[this.map.length] = rows[p][rows[p].length - 1];
-					this.breaks[this.breaks.length] = p;
-				}
-			}
 		},
 		_makeLayout: function() {
 
-
-
-
-			// var runningWidth = 0;
-			// for (var i = 0, len = this.$items.length; i < len; i++) {
-			// 	var fraction = this.ratios[i] / this.map[i];
-			// 	var width = Math.round(fraction * this.parentWidth);
-			// 	var height = Math.round(this.parentWidth / this.map[i]);
-			// 	if (height > this.options.maxHeight) {
-			// 		height = this.options.maxHeight;
-			// 		width = height * this.ratios[i];
-			// 	}
-			// 	if (this.breaks[i] !== this.breaks[i + 1]) {
-			// 		var posWidth = this.parentWidth - runningWidth;
-			// 		if (posWidth - width < 5 || width > posWidth) {
-			// 			width = posWidth;
-			// 		}
-			// 		runningWidth = 0;
-			// 	} else {
-			// 		runningWidth = runningWidth + width;
-			// 	}
-
-			// 	$(this.$items[i]).css({
-			// 		'width': width,
-			// 		'height': height
-			// 	}).attr('data-row', this.breaks[i]);
-
-			// 	if (this.options.exposeScaling) {
-			// 		var scale = Math.round((width / this.widths[i]) * 100) / 100;
-			// 		$(this.$items[i]).attr('data-scale', scale);
-			// 	}
-			// }
-
-
+			/* Loop all rows */
 			for (var i = 0, il = this.rows.length; i < il; i++) {
 
 				var rowLength = this.rows[i].length;
 
+				/* Remove gutter from the parent width */
 				var rowWidth = this.parentWidth - (parseInt(this.options.gutter) * rowLength - 1);
-
+ 
+				/* Loop all elements in row */
 				for (var o = 0; o < rowLength; o++) {
 
 					var $this = this.rows[i][o];
 
+					/* Collect ratio data and calculate item size relative to row */
 					var ratio = parseFloat($this.attr('data-ratio'));
 					var rowCount = parseInt($this.attr('data-row'));
-					
 					var rowRatio = this.rowRatios[rowCount];
-
 					var fraction = ratio/rowRatio;
 
-					console.log('fraction', ratio, rowRatio, fraction);
-					// if(isFinite(fraction)){
-					// 	fraction = 1;
-					// }
-
+					/* Resize relative to row */
 					var width = Math.floor(rowWidth * fraction);
-
 					var height = Math.floor(rowWidth / rowRatio);
-					// var height = width / ratio;
 
-					// if(height > this.options.maxHeight){
-					// 	height = this.options.maxHeight;
-					// 	width = height / ratio;
-					// 	console.log('too high');
-					// }
-					if($this.attr('data-pos') === 'last'){
-						console.log('----');
+					/* If item is too large resize (useful for last row) */
+					if(height > this.options.maxHeight){
+						height = this.options.maxHeight;
+						width = height * ratio;
 					}
-					var gutter = ($this.attr('data-pos') !== 'last') ? this.options.gutter : 0;
+
+					/* Don't include gutter for items at the end of the row */
+					var gutter = ($this.attr('data-last') !== 'true') ? this.options.gutter : 0;
+					
+					/* Attach item styles */
 					$this.css({
-						// 'border': '1px solid #fcc',
+						'float' : 'left',
 						'width': width,
 						'height': height,
 						'margin-right': gutter,
 						'margin-bottom': this.options.gutter
 					});
 
-					// if (this.options.exposeScaling) {
-					// 	var origWidth = parseInt($this.attr('data-width'));
-					// 	console.log('origWidth', width, origWidth);
-					// 	var scale = Math.round((width / origWidth) * 100) / 100;
-					// 	$this.attr('data-scale', scale);
-					// }
-
-					// console.log('tile',$this,fraction,width, height, ratio,rowCount,rowRatio);
-
+					/* Expose scaling (useful for type) */
+					if (this.options.exposeScaling) {
+						var origWidth = parseInt($this.attr('data-width'));
+						var scale = Math.round((width / origWidth) * 100) / 100;
+						$this.attr('data-scale', scale);
+					}
+		
 				}
 
 			}
@@ -363,11 +279,7 @@
 
 		},
 		_cancel: function() {
-			this.element.children()
-				.each(function() {
-				this.style.width = '';
-				this.style.height = '';
-			});
+			this.element.children().attr('style','');
 		}
 	};
 
