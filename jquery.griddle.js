@@ -22,6 +22,7 @@
 		isResizable: true, // Resize function that fires on smart resize
 		minHeight: 0, // Min height of items
 		maxHeight: 99999, // Max Height of items
+		maxHeightLastRow: 99999,
 		parentWidth: false, // Force setting of the containers width defaults to auto
 		minParentWidth: 700, // If less than this amount the whole layout cancels
 		maxRatio: 10, // Max ratio of the total row, fiddle for best effect
@@ -228,8 +229,10 @@
 		},
 		_makeLayout: function() {
 
+			var rowTotal = this.rows.length;
+
 			/* Loop all rows */
-			for (var i = 0, il = this.rows.length; i < il; i++) {
+			for (var i = 0; i < rowTotal; i++) {
 
 				var rowLength = this.rows[i].length;
 
@@ -251,9 +254,15 @@
 					var width = Math.floor(rowWidth * fraction);
 					var height = Math.floor(rowWidth / rowRatio);
 
-					/* If item is too large resize (useful for last row) */
+					/* If item is too large resize */
 					if(height > this.options.maxHeight){
 						height = this.options.maxHeight;
+						width = height * ratio;
+					}
+
+					/* If item is too large and its the last row resize */
+					if(rowCount > rowTotal - 2 && height > this.options.maxHeightLastRow){
+						height = this.options.maxHeightLastRow;
 						width = height * ratio;
 					}
 
