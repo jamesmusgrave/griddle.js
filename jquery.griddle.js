@@ -50,7 +50,7 @@
 			var instance = this;
 
 			setTimeout(function() {
-				instance.element.addClass('griddle-pan');
+				instance.element.addClass('griddle');
 			}, 0);
 
 			if (this.options.isResizable) {
