@@ -33,7 +33,7 @@
 		}, // Img CSS after before function but before layout
 		cssEnd: false, // Img CSS after everything
 		exposeScaling: false, // Expose scaling in dom
-		gutter: 0 // Set gutter
+		gutter: 0 // Set gutter 
 	};
 
 	$.griddle.prototype = {
@@ -261,8 +261,7 @@
 						'float' : 'left',
 						'width': width,
 						'height': height,
-						'margin-right': gutter,
-						'margin-bottom': this.options.gutter
+						'margin-right': gutter
 					});
 
 					/* Expose scaling (useful for type) */
