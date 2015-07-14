@@ -1,5 +1,5 @@
 /*
- * jQuery griddle v1.1.6
+ * jQuery griddle v1.1.7
  *
  * Licensed under the MIT license.
  * Copyright 2015 James Musgrave
@@ -88,6 +88,11 @@
 			if (this.options.cssEnd) {
 				this.element.children().children('img').css(this.options.cssEnd);
 			}
+			var instance = this;
+
+			setTimeout(function() {
+				instance.element.addClass('griddle-finished');
+			}, 0);
 		},
 		resize: function() {
 			this._setParentWidth();
