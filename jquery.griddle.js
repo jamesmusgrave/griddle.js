@@ -234,7 +234,7 @@
 				var rowLength = this.rows[i].length;
 
 				/* Remove gutter from the parent width */
-				var rowWidth = this.parentWidth - (parseInt(this.options.gutter) * rowLength - 1);
+				var rowWidth = this.parentWidth - (parseInt(this.options.gutter) * (rowLength - 1));
  
 				/* Loop all elements in row */
 				for (var o = 0; o < rowLength; o++) {
