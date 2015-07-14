@@ -33,7 +33,8 @@
 		}, // Img CSS after before function but before layout
 		cssEnd: false, // Img CSS after everything
 		exposeScaling: false, // Expose scaling in dom
-		gutter: 0 // Set gutter 
+		gutter: 0, // Set gutter 
+		calculateSize: false
 	};
 
 	$.griddle.prototype = {
@@ -119,17 +120,20 @@
 			this.$items = this.element.children()
 				.css({
 				float: 'left'
-			})
-				.addClass('griddle-item')
-				.each(function(k, v) {
-				var elm = $(v);
-				if (typeof(elm.attr('data-width') === 'undefined')) {
-					elm.attr('data-width', elm.outerWidth());
-				}
-				if (typeof(elm.attr('data-height') === 'undefined')) {
-					elm.attr('data-height', elm.outerHeight());
-				}
-			});
+			}).addClass('griddle-item');
+
+			if(this.options.calculateSize){
+				this.$items.each(function(k, v) {
+
+					var elm = $(v);
+					if (typeof(elm.attr('data-width') === 'undefined')) {
+						elm.attr('data-width', elm.outerWidth());
+					}
+					if (typeof(elm.attr('data-height') === 'undefined')) {
+						elm.attr('data-height', elm.outerHeight());
+					}
+				});
+			}
 
 			return this.$items;
 		},
