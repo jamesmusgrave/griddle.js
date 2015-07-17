@@ -1,5 +1,5 @@
 /*
- * jQuery griddle v1.1.7
+ * jQuery griddle v1.1.8
  *
  * Licensed under the MIT license.
  * Copyright 2015 James Musgrave
@@ -347,7 +347,7 @@
 				if (instance) {
 					// apply options & init
 					instance.option(options || {});
-					instance._init();
+					instance.layout();
 				} else {
 					// initialize new instance
 					$.data(this, 'griddle', new $.griddle(options, this));
