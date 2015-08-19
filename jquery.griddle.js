@@ -1,5 +1,5 @@
 /*
- * jQuery griddle v1.1.8
+ * jQuery griddle v1.1.9
  *
  * Licensed under the MIT license.
  * Copyright 2015 James Musgrave
@@ -35,7 +35,7 @@
 		cssEnd: false, // Img CSS after everything
 		exposeScaling: false, // Expose scaling in dom
 		gutter: 0, // Set gutter 
-		calculateSize: false
+		calculateSize: false // Calculates size of element rather than using data- values
 	};
 
 	$.griddle.prototype = {
@@ -292,11 +292,13 @@
 				}
 
 			}
+			this.element.removeClass('griddle-dormant').addClass('griddle-active');
 
 
 		},
 		_cancel: function() {
 			this.element.children().attr('style','');
+			this.element.removeClass('griddle-active').addClass('griddle-dormant');
 		}
 	};
 
