@@ -1,5 +1,5 @@
 /*
- * jQuery griddle v1.1.9
+ * jQuery griddle v1.1.10
  *
  * Licensed under the MIT license.
  * Copyright 2015 James Musgrave
@@ -35,7 +35,8 @@
 		cssEnd: false, // Img CSS after everything
 		exposeScaling: false, // Expose scaling in dom
 		gutter: 0, // Set gutter 
-		calculateSize: false // Calculates size of element rather than using data- values
+		calculateSize: false, // Calculates size of element rather than using data- values
+		attributes: 'both' // Both, width, height
 	};
 
 	$.griddle.prototype = {
@@ -277,10 +278,20 @@
 					/* Attach item styles */
 					$this.css({
 						'float' : 'left',
-						'width': width,
-						'height': height,
 						'margin-right': gutter
 					});
+
+					if (this.options.attributes === 'both' || this.options.attributes === 'width') {
+						$this.css({
+							'width': width,
+						});
+					}
+
+					if (this.options.attributes === 'both' || this.options.attributes === 'height') {
+						$this.css({
+							'height': height
+						});
+					}
 
 					/* Expose scaling (useful for type) */
 					if (this.options.exposeScaling) {
