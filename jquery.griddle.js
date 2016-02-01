@@ -1,5 +1,5 @@
 /*
- * jQuery griddle v1.1.12
+ * jQuery griddle v1.1.14
  *
  * Licensed under the MIT license.
  * Copyright 2015 James Musgrave
@@ -290,6 +290,9 @@
 
 					if (this.options.attributes === 'both' || this.options.attributes === 'width') {
 						childToResize.css({
+							'width': width,
+						});
+						$this.css({
 							'width': width,
 						});
 					}
