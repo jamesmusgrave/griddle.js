@@ -36,7 +36,8 @@
 		exposeScaling: false, // Expose scaling in dom
 		gutter: 0, // Set gutter 
 		calculateSize: false, // Calculates size of element rather than using data- values
-		attributes: 'both' // Both, width, height
+		attributes: 'both', // Both, width, height
+		childToResize: false // Size a child element
 	};
 
 	$.griddle.prototype = {
@@ -281,14 +282,20 @@
 						'margin-right': gutter
 					});
 
+					var childToResize = $this;
+
+					if(this.options.childToResize){
+						childToResize = $this.find(this.options.childToResize);
+					}
+
 					if (this.options.attributes === 'both' || this.options.attributes === 'width') {
-						$this.css({
+						childToResize.css({
 							'width': width,
 						});
 					}
 
 					if (this.options.attributes === 'both' || this.options.attributes === 'height') {
-						$this.css({
+						childToResize.css({
 							'height': height
 						});
 					}
