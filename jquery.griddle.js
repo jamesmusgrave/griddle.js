@@ -1,5 +1,5 @@
 /*
- * jQuery griddle v1.1.14
+ * jQuery griddle v1.1.16
  *
  * Licensed under the MIT license.
  * Copyright 2015 James Musgrave
