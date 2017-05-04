@@ -12,7 +12,7 @@ $('div').griddle({
 	isResizable: true, // Resize function that fires on smart resize
 	minHeight: 0, // Min height of items
 	maxHeight: 99999, // Max Height of items
-	maxHeightLastRow: 99999,
+	maxHeightLastRow: 99999, //Can be set to 'auto' to use the height of the previous row
 	parentWidth: false, // Force setting of the containers width defaults to auto
 	minParentWidth: 700, // If less than this amount the whole layout cancels
 	maxRatio: 10, // Max ratio of the total row, fiddle for best effect

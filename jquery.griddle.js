@@ -238,6 +238,8 @@
 
 			var rowTotal = this.rows.length;
 
+			var rowHeights = [];
+
 			/* Loop all rows */
 			for (var i = 0; i < rowTotal; i++) {
 
@@ -268,9 +270,18 @@
 					}
 
 					/* If item is too large and its the last row resize */
-					if(rowCount > rowTotal - 2 && height > this.options.maxHeightLastRow){
-						height = this.options.maxHeightLastRow;
-						width = height * ratio;
+
+					if( this.options.maxHeightLastRow === 'auto'){
+						var lastRowHeight = rowHeights[rowCount - 1];
+						if(rowCount > rowTotal - 2 && rowCount > 0 && height > lastRowHeight) {
+							height = lastRowHeight;
+							width = height * ratio;
+						}
+					} else {
+						if(rowCount > rowTotal - 2 && height > this.options.maxHeightLastRow){
+							height = this.options.maxHeightLastRow;
+							width = height * ratio;
+						} 
 					}
 
 					/* Don't include gutter for items at the end of the row */
@@ -302,6 +313,8 @@
 							'height': height
 						});
 					}
+
+					rowHeights[rowCount] = height;
 
 					/* Expose scaling (useful for type) */
 					if (this.options.exposeScaling) {
